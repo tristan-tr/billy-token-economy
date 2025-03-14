@@ -22,7 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Use SASS instead of CSS
-*.css
-*.css.map
