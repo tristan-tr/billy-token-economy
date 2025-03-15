@@ -1,4 +1,4 @@
-import  { createContext, useContext, useState, ReactNode } from 'react';
+import {createContext, useContext, useState, ReactNode, useEffect, useRef} from 'react';
 
 interface Inventory {
     ducats: number;
@@ -10,8 +10,25 @@ const InventoryContext = createContext<Inventory | undefined>(undefined);
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const [ducats, setDucats] = useState<number>(0);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        // Create audio element when component mounts
+        audioRef.current = new Audio('/coin-clatter.mp3');
+        return () => {
+            // Cleanup when component unmounts
+            if (audioRef.current) {
+                audioRef.current.pause();
+            }
+        };
+    }, []);
 
     const addDucats = (amount: number) => {
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(err => console.error("Audio play failed:", err));
+        }
+
         setDucats(prev => prev + amount);
     };
 
