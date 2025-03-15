@@ -3,6 +3,7 @@ import {CustomNodeElementProps, Tree} from 'react-d3-tree';
 import TaskTreeItem from "./TaskTreeItem.tsx";
 import {Task} from "./Task.tsx";
 import {useInventory} from "./InventoryContext.tsx";
+import '../styles/TaskTree.css'
 
 interface TreeNode {
     name: string;
@@ -38,8 +39,7 @@ const TaskTree = () => {
             image: '/crew.png',
             rewardText: '100 Ducats',
             redeemReward: () => addDucats(100),
-            completed: false,
-            parent: 1
+            completed: false
         },
         {
             id: 3,
@@ -74,7 +74,7 @@ const TaskTree = () => {
         setTasks([...tasks]); // trigger re-render
     };
 
-    const convertTasksToTree = (tasks: Task[]): TreeNode[] => {
+    const convertTasksToTree = (tasks: Task[]): TreeNode => {
         const taskMap = new Map(tasks.map(task => [task.id, task]));
         const taskChildren = new Map<number, Task[]>();
 
@@ -117,12 +117,26 @@ const TaskTree = () => {
             };
         };
 
-        return rootTasks.map(task => buildTree(task.id));
+        // Create a super root that contains all root tasks (to allow for multiple roots)
+        return {
+            name: "All Tasks",
+            attributes: { id: 0 },
+            children: rootTasks.map(task => buildTree(task.id))
+        };
     };
 
 
     const renderNode = ({ nodeDatum }: CustomNodeElementProps) => {
         const { id } = nodeDatum.attributes || {};
+
+        // hide the super root node (ID = 0)
+        if (id === 0) {
+            return (
+                <foreignObject width={1} height={1} x={0} y={0}>
+                    <div className="invisible"></div>
+                </foreignObject>
+            );
+        }
 
         // if ID is negative then we have found a hidden task placeholder
         if (typeof id === 'number' && id < 0) {
@@ -162,6 +176,11 @@ const TaskTree = () => {
                 renderCustomNodeElement={renderNode}
                 nodeSize={{ x: nodeWidth+50, y: nodeHeight }}
                 translate={{ x: window.innerWidth / 2, y: window.innerHeight / 4 }}
+                separation={{siblings: 1.2}}
+                pathClassFunc={(data) => {
+                    // add an "invisible" class to paths coming from the super root node
+                    return data.source.data.attributes?.id === 0 ? "invisible-path" : "";
+                }}
             />
         </div>
     );

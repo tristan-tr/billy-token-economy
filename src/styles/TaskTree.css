@@ -1,0 +1,5 @@
+@layer utilities {
+    .invisible-path {
+        stroke-opacity: 0;
+    }
+}
