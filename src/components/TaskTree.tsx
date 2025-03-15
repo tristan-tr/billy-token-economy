@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {CustomNodeElementProps, Tree} from 'react-d3-tree';
 import TaskTreeItem from "./TaskTreeItem.tsx";
 import {Task} from "./Task.tsx";
+import {useInventory} from "./InventoryContext.tsx";
 
 interface TreeNode {
     name: string;
@@ -14,13 +15,16 @@ const TaskTree = () => {
     const nodeHeight = 250;
     const nodeScale = 75;
 
+    const { addDucats } = useInventory();
+
     const [tasks, setTasks] = useState<Task[]>([
         {
             id: 1,
             name: 'Find Treasure Map',
             description: 'Locate the ancient map in the tavern',
             image: '/map.png',
-            tokenReward: 50,
+            rewardText: '50 Ducats',
+            redeemReward: () => addDucats(50),
             completed: false
         },
         {
@@ -28,7 +32,8 @@ const TaskTree = () => {
             name: 'Gather Crew',
             description: 'Recruit five seasoned pirates',
             image: '/crew.png',
-            tokenReward: 100,
+            rewardText: '100 Ducats',
+            redeemReward: () => addDucats(100),
             completed: false,
             parent: 1
         },
@@ -37,7 +42,8 @@ const TaskTree = () => {
             name: 'Set Sail',
             description: 'Navigate to the marked location',
             image: '/sail.png',
-            tokenReward: 150,
+            rewardText: '150 Ducats',
+            redeemReward: () => addDucats(150),
             completed: false,
             parent: 2
         },
@@ -46,16 +52,21 @@ const TaskTree = () => {
             name: 'Combined',
             description: 'Navigate to the marked location',
             image: '/sail.png',
-            tokenReward: 150,
+            rewardText: '150 Ducats',
+            redeemReward: () => addDucats(150),
             completed: false,
             parent: 1
         }
     ]);
 
     const handleTaskComplete = (taskId: number) => {
-        setTasks(tasks.map(task =>
-            task.id === taskId ? { ...task, completed: true } : task
-        ));
+        const task = tasks.find((task) => task.id === taskId);
+        if (!task) {
+            throw new Error();
+        }
+
+        task.completed = true;
+        task.redeemReward();
     };
 
     const convertTasksToTree = (tasks: Task[]): TreeNode[] => {

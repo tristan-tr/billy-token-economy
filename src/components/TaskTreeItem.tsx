@@ -22,7 +22,7 @@ function TaskTreeItem({task, onComplete, className}: TaskTreeItemProps) {
                 </p>
                 <div className="mt-auto">
                     <p className="text-red-800 font-bold mb-2">
-                        🪙 Reward: <span className="text-amber-600">{task.tokenReward} Ducats</span>
+                        Reward: <span className="text-amber-600">{task.rewardText}</span>
                     </p>
                     <button
                         onClick={onComplete}

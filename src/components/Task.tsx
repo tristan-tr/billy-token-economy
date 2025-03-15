@@ -3,7 +3,8 @@ export interface Task {
     name: string;
     description: string;
     image: string;
-    tokenReward: number;
+    rewardText: string
+    redeemReward: () => void;
     completed: boolean;
     parent?: number;
 }
