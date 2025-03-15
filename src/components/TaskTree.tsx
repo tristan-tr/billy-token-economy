@@ -169,7 +169,7 @@ const TaskTree = () => {
     };
 
     return (
-        <div className="h-screen w-full bg-slate-100">
+        <div className="h-screen w-full relative overflow-hidden">
             <Tree
                 data={convertTasksToTree(tasks)}
                 orientation="vertical"
@@ -179,8 +179,9 @@ const TaskTree = () => {
                 separation={{siblings: 1.2}}
                 pathClassFunc={(data) => {
                     // add an "invisible" class to paths coming from the super root node
-                    return data.source.data.attributes?.id === 0 ? "invisible-path" : "";
+                    return data.source.data.attributes?.id === 0 ? "invisible-path" : "ship-route";
                 }}
+                pathFunc="step"
             />
         </div>
     );

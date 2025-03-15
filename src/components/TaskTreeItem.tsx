@@ -9,6 +9,16 @@ interface TaskTreeItemProps {
 function TaskTreeItem({task, onComplete, className}: TaskTreeItemProps) {
     return (
         <div key={task.id} className={`bg-amber-50 rounded-lg shadow-lg border-4 border-yellow-900 p-4 flex ${className}`}>
+            {!task.completed && (
+                <div className="absolute top-1 right-0.5">
+                    <img
+                        src="/treasure-marker.png"
+                        alt="location"
+                        className="w-12 h-12"
+                    />
+            </div>
+            )}
+
             <img
                 src={task.image}
                 alt={task.name}
