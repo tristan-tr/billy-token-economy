@@ -15,6 +15,10 @@ const TaskTree = () => {
     const nodeHeight = 250;
     const nodeScale = 75;
 
+    const dummyWidth = 150;
+    const dummyHeight = 50;
+
+
     const { addDucats } = useInventory();
 
     const [tasks, setTasks] = useState<Task[]>([
@@ -67,6 +71,7 @@ const TaskTree = () => {
 
         task.completed = true;
         task.redeemReward();
+        setTasks([...tasks]); // trigger re-render
     };
 
     const convertTasksToTree = (tasks: Task[]): TreeNode[] => {
@@ -89,11 +94,26 @@ const TaskTree = () => {
         // Recursive function to build the tree
         const buildTree = (taskId: number): TreeNode => {
             const task = taskMap.get(taskId)!;
-            const children = taskChildren.get(taskId) || [];
+            const childrenTasks = taskChildren.get(taskId) || [];
+            let children: TreeNode[] = [];
+
+            if (childrenTasks.length > 0) {
+                if (task.completed) {
+                    // Parent is completed: show its children normally.
+                    children = childrenTasks.map(child => buildTree(child.id));
+                } else {
+                    // Parent is not completed: hide the actual children and add a dummy node
+                    children = [{
+                        name: `+${childrenTasks.length} hidden`,
+                        // Using a negative id to mark this as a dummy node.
+                        attributes: { id: -task.id }
+                    }];
+                }
+            }
             return {
                 name: task.name,
                 attributes: { id: task.id },
-                children: children.map(child => buildTree(child.id))
+                children
             };
         };
 
@@ -102,6 +122,26 @@ const TaskTree = () => {
 
 
     const renderNode = ({ nodeDatum }: CustomNodeElementProps) => {
+        const { id } = nodeDatum.attributes || {};
+
+        // if ID is negative then we have found a hidden task placeholder
+        if (typeof id === 'number' && id < 0) {
+            return (
+                <foreignObject
+                    width={dummyWidth}
+                    height={dummyHeight}
+                    x={-dummyWidth / 2}
+                    y={-dummyHeight / 2}
+                    className="pointer-events-none"
+                >
+                    <div className={`w-[${dummyWidth}px] h-[${dummyHeight}px] flex items-center justify-center p-2 bg-gray-200 rounded text-sm text-gray-700`}>
+                        {nodeDatum.name}
+                    </div>
+                </foreignObject>
+            );
+        }
+
+        // not a hidden task
         const task = tasks.find(t => t.id === nodeDatum.attributes?.id)!;
         return (
             <foreignObject width={nodeWidth} height={nodeHeight} x={-nodeWidth/2} y={-nodeHeight/2} className="pointer-events-none">
