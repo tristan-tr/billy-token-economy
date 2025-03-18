@@ -1,4 +1,4 @@
-import {Task} from "./Task.tsx";
+import {Task} from "../interfaces/Task.tsx";
 
 interface TaskTreeItemProps {
     task: Task;
