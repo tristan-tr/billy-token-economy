@@ -1,18 +1,15 @@
 import '../styles/global.css'
-import TaskTree from "../components/TaskTree.tsx";
 import {InventoryProvider} from "../components/InventoryContext.tsx";
 import InventoryDisplay from "../components/InventoryDisplay.tsx";
-import Background from "../components/Background.tsx";
+import MapView from "../components/MapView.tsx";
 
 function App() {
   return (
     <>
-        <Background>
-            <InventoryProvider>
-                <InventoryDisplay/>
-                <TaskTree/>
-            </InventoryProvider>
-        </Background>
+        <InventoryProvider>
+            <MapView />
+            <InventoryDisplay/>
+        </InventoryProvider>
     </>
   )
 }

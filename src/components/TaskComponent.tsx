@@ -1,12 +1,12 @@
 import {Task} from "../interfaces/Task.tsx";
 
-interface TaskTreeItemProps {
+interface TaskProps {
     task: Task;
     onComplete: () => void;
     className?: string;
 }
 
-function TaskTreeItem({task, onComplete, className}: TaskTreeItemProps) {
+function TaskComponent({task, onComplete, className}: TaskProps) {
     return (
         <div key={task.id} className={`bg-amber-50 rounded-lg shadow-lg border-4 border-yellow-900 p-4 flex ${className}`}>
             {!task.completed && (
@@ -46,4 +46,4 @@ function TaskTreeItem({task, onComplete, className}: TaskTreeItemProps) {
         </div>    )
 }
 
-export default TaskTreeItem
+export default TaskComponent
