@@ -1,4 +1,7 @@
-import {Task} from "../interfaces/Task.tsx";
+import { useState } from 'react';
+import { Task } from "../interfaces/Task.tsx";
+import { motion, AnimatePresence } from 'framer-motion';
+import treasureMarker from '../images/treasure-marker.png';
 
 interface TaskProps {
     task: Task;
@@ -7,43 +10,72 @@ interface TaskProps {
 }
 
 function TaskComponent({task, onComplete, className}: TaskProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
     return (
-        <div key={task.id} className={`bg-amber-50 rounded-lg shadow-lg border-4 border-yellow-900 p-4 flex ${className}`}>
-            {!task.completed && (
-                <div className="absolute top-1 right-0.5">
+        <div
+            className={`relative ${className}`}
+            onMouseEnter={() => setIsExpanded(true)}
+            onMouseLeave={() => setIsExpanded(false)}
+        >
+            <motion.div
+                className="quest-marker flex items-center justify-center cursor-pointer"
+                whileHover={{ scale: 1.1 }}
+            >
+                {task.completed && (
                     <img
-                        src="/treasure-marker.png"
-                        alt="location"
-                        className="w-12 h-12"
+                        src={treasureMarker}
+                        alt="Treasure Marker"
+                        className={`w-12 h-12 transition-duration-200 opacity-70`}
                     />
-            </div>
-            )}
+                )}
+            </motion.div>
 
-            <img
-                src={task.image}
-                alt={task.name}
-                className="w-48 h-full mr-4 object-cover rounded-lg border-2 border-yellow-900"
-            />
-
-            <div className="flex-1 flex flex-col justify-between gap-3">
-                <h2 className="text-2xl font-bold text-yellow-900 font-pirate">{task.name}</h2>
-                <p className="text-yellow-800 text-sm leading-relaxed italic">
-                    “{task.description}”
-                </p>
-                <div className="mt-auto">
-                    <p className="text-red-800 font-bold mb-2">
-                        Reward: <span className="text-amber-600">{task.rewardText}</span>
-                    </p>
-                    <button
-                        onClick={onComplete}
-                        disabled={task.completed}
-                        className={`w-full py-2 px-4 rounded-lg font-bold transition-all ${task.completed ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'}`}
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-72"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                     >
-                        {task.completed ? 'Plundered!' : 'Plunder!'}
-                    </button>
-                </div>
-            </div>
-        </div>    )
+                        <div className="bg-amber-50 rounded-lg shadow-lg border-4 border-yellow-900 p-3 flex flex-col">
+                            <div className="flex">
+                                <img
+                                    src={task.image}
+                                    alt={task.name}
+                                    className="w-20 h-20 mr-3 object-cover rounded-lg border-2 border-yellow-900"
+                                />
+                                <div>
+                                    <h2 className="text-xl font-bold text-yellow-900 font-pirate">{task.name}</h2>
+                                    <p className="text-yellow-800 text-xs leading-tight italic">
+                                        "{task.description}"
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="mt-2">
+                                <p className="text-red-800 font-bold text-sm">
+                                    Reward: <span className="text-amber-600">{task.rewardText}</span>
+                                </p>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onComplete();
+                                    }}
+                                    disabled={task.completed}
+                                    className={`w-full py-1 px-2 rounded-lg font-bold text-sm transition-all ${task.completed ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white`}
+                                >
+                                    {task.completed ? 'Plundered!' : 'Plunder!'}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="arrow-pointer"></div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 }
 
-export default TaskComponent
+export default TaskComponent;
