@@ -5,7 +5,7 @@ import TaskPath from './TaskPath.tsx';
 import ebonmarchImage from '../images/Western_Ebonmarch_map.png';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MAP_WIDTH } from "../data/Locations.tsx";
-import { useTasks } from './TaskContext.tsx';
+import {useTasks} from "./useTasks.ts";
 
 function MapView() {
     const { tasks, visibleMarkers, activePathAnimations, handleTaskComplete, handlePathComplete } = useTasks();

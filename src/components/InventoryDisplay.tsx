@@ -1,5 +1,5 @@
-import { useInventory } from './InventoryContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import {useInventory} from "./useInventory.tsx";
 
 const InventoryDisplay = () => {
     const { ducats } = useInventory();

@@ -1,6 +1,6 @@
 import {LocationsMap} from "./Locations.tsx";
 import {MapTask} from "../interfaces/MapTask.tsx";
-import {useInventory} from "../components/InventoryContext.tsx";
+import {useInventory} from "../components/useInventory.tsx";
 
 function Tasks(): MapTask[] {
     const { addDucats } = useInventory();
