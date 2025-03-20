@@ -1,4 +1,5 @@
-import {createContext, useContext, useState, ReactNode, useEffect, useRef} from 'react';
+import {createContext, useContext, ReactNode, useEffect, useRef} from 'react';
+import useLocalStorage from 'use-local-storage';
 
 interface Inventory {
     ducats: number;
@@ -9,7 +10,7 @@ interface Inventory {
 const InventoryContext = createContext<Inventory | undefined>(undefined);
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
-    const [ducats, setDucats] = useState<number>(0);
+    const [ducats, setDucats] = useLocalStorage<number>('ducats', 0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
