@@ -8,12 +8,12 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
 
     const addDucats = (amount: number) => {
         new Audio('/coin-clatter.mp3').play();
-        setDucats(prev => prev + amount);
+        setDucats(prev => (prev ?? 0) + amount);
     };
 
     const removeDucats = (amount: number) => {
         new Audio('/coin-clatter.mp3').play();
-        setDucats(prev => Math.max(prev - amount, 0));
+        setDucats(prev => Math.max((prev ?? 0) - amount, 0));
     };
 
     return (
