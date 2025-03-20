@@ -2,12 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import TaskComponent from './TaskComponent.tsx';
 import TaskPath from './TaskPath.tsx';
-import { useInventory } from './InventoryContext';
 import ebonmarchImage from '../images/Western_Ebonmarch_map.png';
 import { motion, AnimatePresence } from 'framer-motion';
 import {MapTask} from "../interfaces/MapTask.tsx";
-import {LocationsMap, MAP_WIDTH} from "../data/Locations.tsx";
-
+import {MAP_WIDTH} from "../data/Locations.tsx";
+import Tasks from "../data/Tasks.tsx";
 
 interface PathAnimation {
     id: string;
@@ -16,51 +15,7 @@ interface PathAnimation {
 }
 
 function MapView() {
-    const { addDucats } = useInventory();
-    const [tasks, setTasks] = useState<MapTask[]>([
-        {
-            id: 1,
-            name: 'Find Treasure Map',
-            description: 'Locate the ancient map in the tavern',
-            image: '/map.png',
-            rewardText: '50 Ducats',
-            redeemReward: () => addDucats(50),
-            completed: false,
-            position: LocationsMap['Xalos']
-        },
-        {
-            id: 2,
-            name: 'Gather Crew',
-            description: 'Recruit five seasoned pirates',
-            image: '/crew.png',
-            rewardText: '100 Ducats',
-            redeemReward: () => addDucats(100),
-            completed: false,
-            position: LocationsMap['Caecavel']
-        },
-        {
-            id: 3,
-            name: 'Set Sail',
-            description: 'Navigate to the marked location',
-            image: '/sail.png',
-            rewardText: '150 Ducats',
-            redeemReward: () => addDucats(150),
-            completed: false,
-            parent: 2,
-            position: LocationsMap['Sitiuya']
-        },
-        {
-            id: 4,
-            name: 'Combined',
-            description: 'Navigate to the marked location',
-            image: '/sail.png',
-            rewardText: '150 Ducats',
-            redeemReward: () => addDucats(150),
-            completed: false,
-            parent: 1,
-            position: LocationsMap['Liligan']
-        }
-    ]);
+    const [tasks, setTasks] = useState<MapTask[]>(Tasks());
 
     const mapRef = useRef<HTMLImageElement>(null);
     const [mapScale, setMapScale] = useState(1);
