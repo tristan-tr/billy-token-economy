@@ -12,7 +12,7 @@ export const LocationsMap: Record<string, Location> = {
     'Hasren': { x: 1477, y: 2188 },
     'Verringen': { x: 1498, y: 2149 },
     'Begreyck': { x: 1642, y: 2244 },
-    'Xalos': { x: 2110, y: 2167 },
+    'Xalos': { x: 1777, y: 2272 },
     'Dilabon': { x: 2001, y: 2223 },
     'Kelidel': { x: 2111, y: 2166 },
     'Plamora': { x: 2196, y: 2348 },
