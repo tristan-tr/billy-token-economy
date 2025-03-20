@@ -1,17 +1,25 @@
-import React from 'react';
+import { useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { Task } from '../interfaces/Task.tsx';
 import TaskComponent from './TaskComponent.tsx';
+import TaskPath from './TaskPath.tsx';
 import { useInventory } from './InventoryContext';
-import ebonmarchImage from '../images/Western_Ebonmarch_map.png'
+import ebonmarchImage from '../images/Western_Ebonmarch_map.png';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MapTask extends Task {
     position: { x: number; y: number };
 }
 
+interface PathAnimation {
+    id: string;
+    startTaskId: number;
+    endTaskId: number;
+}
+
 function MapView() {
     const { addDucats } = useInventory();
-    const [tasks, setTasks] = React.useState<MapTask[]>([
+    const [tasks, setTasks] = useState<MapTask[]>([
         {
             id: 1,
             name: 'Find Treasure Map',
@@ -56,7 +64,20 @@ function MapView() {
         }
     ]);
 
+    // Track active path animations
+    const [activePathAnimations, setActivePathAnimations] = useState<PathAnimation[]>([]);
+
+    // Track which task markers should be visible
+    const [visibleMarkers, setVisibleMarkers] = useState<Record<number, boolean>>({
+        1: true,
+        2: true,
+    });
+
     const handleTaskComplete = (taskId: number) => {
+        const completedTask = tasks.find(task => task.id === taskId);
+        if (!completedTask) return;
+
+        // Mark task as completed and apply reward
         const updatedTasks = tasks.map(task => {
             if (task.id === taskId) {
                 task.completed = true;
@@ -65,9 +86,34 @@ function MapView() {
             return task;
         });
         setTasks(updatedTasks);
+
+        // Find child tasks that should now be revealed
+        const childTasks = tasks.filter(task => task.parent === taskId);
+
+        // Create path animations for each newly revealed child task
+        const newPaths = childTasks.map(childTask => ({
+            id: `path-${completedTask.id}-${childTask.id}`,
+            startTaskId: completedTask.id,
+            endTaskId: childTask.id,
+        }));
+
+        setActivePathAnimations(prev => [...prev, ...newPaths]);
     };
 
-    // Filter tasks to show only those that should be visible
+    const handlePathComplete = (pathId: string, endTaskId: number) => {
+        // Remove the completed path animation
+        setActivePathAnimations(prev =>
+            prev.filter(path => path.id !== pathId)
+        );
+
+        // Make the end task marker visible with animation
+        setVisibleMarkers(prev => ({
+            ...prev,
+            [endTaskId]: true
+        }));
+    };
+
+    // Filter tasks based on completed parent tasks
     const visibleTasks = tasks.filter(task => {
         // Root tasks are always visible
         if (task.parent === undefined) return true;
@@ -87,6 +133,25 @@ function MapView() {
             >
                 <TransformComponent>
                     <img src={`${ebonmarchImage}`} alt="Ebonmarch"/>
+
+                    {activePathAnimations.map(path => {
+                        const startTask = tasks.find(t => t.id === path.startTaskId);
+                        const endTask = tasks.find(t => t.id === path.endTaskId);
+
+                        if (!startTask || !endTask) return null;
+
+                        return (
+                            <TaskPath
+                                key={path.id}
+                                startX={startTask.position.x}
+                                startY={startTask.position.y}
+                                endX={endTask.position.x}
+                                endY={endTask.position.y}
+                                onAnimationComplete={() => handlePathComplete(path.id, endTask.id)}
+                            />
+                        );
+                    })}
+
                     {visibleTasks.map(task => (
                         <div
                             key={task.id}
@@ -96,11 +161,25 @@ function MapView() {
                                 top: `${task.position.y}px`,
                             }}
                         >
-                            <TaskComponent
-                                task={task}
-                                onComplete={() => handleTaskComplete(task.id)}
-                                className="w-128px h-auto scale-100"
-                            />
+                            <AnimatePresence>
+                                {(visibleMarkers[task.id] || task.parent === undefined) && (
+                                    <motion.div
+                                        initial={{ scale: task.parent ? 0 : 1, opacity: task.parent ? 0 : 1 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 260,
+                                            damping: 20
+                                        }}
+                                    >
+                                        <TaskComponent
+                                            task={task}
+                                            onComplete={() => handleTaskComplete(task.id)}
+                                            className="w-128px h-auto scale-100"
+                                        />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     ))}
                 </TransformComponent>
