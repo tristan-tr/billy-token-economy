@@ -22,7 +22,7 @@ function TaskComponent({task, onComplete, className}: TaskProps) {
                 className="quest-marker flex items-center justify-center cursor-pointer"
                 whileHover={{ scale: 1.1 }}
             >
-                {task.completed && (
+                {!task.completed && (
                     <img
                         src={treasureMarker}
                         alt="Treasure Marker"

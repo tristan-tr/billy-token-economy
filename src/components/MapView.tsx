@@ -3,7 +3,6 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { Task } from '../interfaces/Task.tsx';
 import TaskComponent from './TaskComponent.tsx';
 import { useInventory } from './InventoryContext';
-import '../styles/MapView.css';
 import ebonmarchImage from '../images/Western_Ebonmarch_map.png'
 
 interface MapTask extends Task {
@@ -104,23 +103,6 @@ function MapView() {
                             />
                         </div>
                     ))}
-
-                    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                        {visibleTasks
-                            .filter(task => task.parent !== undefined)
-                            .map(task => {
-                                const parent = tasks.find(t => t.id === task.parent);
-                                if (!parent) return null;
-
-                                return (
-                                    <path
-                                        key={`path-${parent.id}-${task.id}`}
-                                        d={`M${parent.position.x},${parent.position.y} L${task.position.x},${task.position.y}`}
-                                        className="ship-route"
-                                    />
-                                );
-                            })}
-                    </svg>
                 </TransformComponent>
             </TransformWrapper>
         </div>
