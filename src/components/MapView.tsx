@@ -1,15 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { Task } from '../interfaces/Task.tsx';
 import TaskComponent from './TaskComponent.tsx';
 import TaskPath from './TaskPath.tsx';
 import { useInventory } from './InventoryContext';
 import ebonmarchImage from '../images/Western_Ebonmarch_map.png';
 import { motion, AnimatePresence } from 'framer-motion';
+import {MapTask} from "../interfaces/MapTask.tsx";
+import {LocationsMap, MAP_WIDTH} from "../data/Locations.tsx";
 
-interface MapTask extends Task {
-    position: { x: number; y: number };
-}
 
 interface PathAnimation {
     id: string;
@@ -28,7 +26,7 @@ function MapView() {
             rewardText: '50 Ducats',
             redeemReward: () => addDucats(50),
             completed: false,
-            position: { x: 350, y: 250 }
+            position: LocationsMap['Xalos']
         },
         {
             id: 2,
@@ -38,7 +36,7 @@ function MapView() {
             rewardText: '100 Ducats',
             redeemReward: () => addDucats(100),
             completed: false,
-            position: { x: 650, y: 450 }
+            position: LocationsMap['Caecavel']
         },
         {
             id: 3,
@@ -49,7 +47,7 @@ function MapView() {
             redeemReward: () => addDucats(150),
             completed: false,
             parent: 2,
-            position: { x: 950, y: 650 }
+            position: LocationsMap['Sitiuya']
         },
         {
             id: 4,
@@ -60,9 +58,27 @@ function MapView() {
             redeemReward: () => addDucats(150),
             completed: false,
             parent: 1,
-            position: { x: 550, y: 850 }
+            position: LocationsMap['Liligan']
         }
     ]);
+
+    const mapRef = useRef<HTMLImageElement>(null);
+    const [mapScale, setMapScale] = useState(1);
+
+    useEffect(() => {
+        const updateScale = () => {
+            if (mapRef.current) {
+                const currentWidth = mapRef.current.clientWidth;
+                setMapScale(currentWidth / MAP_WIDTH);
+            }
+        };
+
+        updateScale();
+        window.addEventListener('resize', updateScale);
+
+        return () => window.removeEventListener('resize', updateScale);
+    }, []);
+
 
     // Track active path animations
     const [activePathAnimations, setActivePathAnimations] = useState<PathAnimation[]>([]);
@@ -132,7 +148,16 @@ function MapView() {
                 initialPositionY={-1100}
             >
                 <TransformComponent>
-                    <img src={`${ebonmarchImage}`} alt="Ebonmarch"/>
+                    <img
+                        ref={mapRef}
+                        src={`${ebonmarchImage}`}
+                        alt="Ebonmarch"
+                        onLoad={() => {
+                            if (mapRef.current) {
+                                setMapScale(mapRef.current.clientWidth / MAP_WIDTH);
+                            }
+                        }}
+                    />
 
                     {activePathAnimations.map(path => {
                         const startTask = tasks.find(t => t.id === path.startTaskId);
@@ -143,10 +168,10 @@ function MapView() {
                         return (
                             <TaskPath
                                 key={path.id}
-                                startX={startTask.position.x}
-                                startY={startTask.position.y}
-                                endX={endTask.position.x}
-                                endY={endTask.position.y}
+                                startX={startTask.position.x * mapScale}
+                                startY={startTask.position.y  * mapScale}
+                                endX={endTask.position.x * mapScale}
+                                endY={endTask.position.y * mapScale}
                                 onAnimationComplete={() => handlePathComplete(path.id, endTask.id)}
                             />
                         );
@@ -157,8 +182,8 @@ function MapView() {
                             key={task.id}
                             className="absolute task-marker -translate-x-1/2 -translate-y-1/2"
                             style={{
-                                left: `${task.position.x}px`,
-                                top: `${task.position.y}px`,
+                                left: `${task.position.x * mapScale}px`,
+                                top: `${task.position.y  * mapScale}px`,
                             }}
                         >
                             <AnimatePresence>
