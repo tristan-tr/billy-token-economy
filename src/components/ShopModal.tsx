@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import ShopCard from "./ShopCard";
 import { ShopItem } from "../interfaces/ShopItem.tsx";
+import ShopItems from "../data/ShopItems";
 
 interface ShopModalProps {
     onClose: () => void;
@@ -9,35 +10,7 @@ interface ShopModalProps {
 }
 
 function ShopModal({ ducats, removeDucats }: ShopModalProps) {
-    const shopItems: ShopItem[] = [
-        {
-            id: 1,
-            name: "Ship Upgrade",
-            description: "Improve your ship's speed and durability",
-            price: 100,
-            action: () => {
-                console.log("Ship upgraded!");
-            }
-        },
-        {
-            id: 2,
-            name: "New Cannon",
-            description: "Add a powerful cannon to your arsenal",
-            price: 150,
-            action: () => {
-                console.log("Cannon added!");
-            }
-        },
-        {
-            id: 3,
-            name: "Treasure Map",
-            description: "Reveals hidden treasures on the map",
-            price: 200,
-            action: () => {
-                console.log("Treasures revealed!");
-            }
-        }
-    ];
+    const shopItems = ShopItems();
 
     const handlePurchase = (item: ShopItem) => {
         if (ducats >= item.price) {
