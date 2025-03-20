@@ -42,7 +42,7 @@ function ShopModal({ ducats, removeDucats, hasSpyglass }: ShopModalProps) {
                         price={item.price}
                         canAfford={ducats >= item.price}
                         onPurchase={() => handlePurchase(item)}
-                        showDescription={hasSpyglass || item.id === -1}
+                        showDescription={hasSpyglass}
                     />
                 ))}
             </div>
