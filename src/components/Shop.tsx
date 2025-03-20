@@ -4,7 +4,7 @@ import {useInventory} from "./useInventory.tsx";
 import ShopModal from "./ShopModal.tsx";
 
 function Shop() {
-    const {ducats, removeDucats} = useInventory();
+    const {ducats, removeDucats, hasSpyglass, setHasSpyglass} = useInventory();
     const [shopOpen, setShopOpen] = useState(false);
 
     const close = () => setShopOpen(false);
@@ -26,6 +26,8 @@ function Shop() {
                         onClose={close}
                         ducats={ducats}
                         removeDucats={removeDucats}
+                        hasSpyglass={hasSpyglass}
+                        setHasSpyglass={setHasSpyglass}
                     />
                 )}
             </AnimatePresence>

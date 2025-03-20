@@ -1,7 +1,10 @@
 import { ShopItem } from "../interfaces/ShopItem.tsx";
+import {useInventory} from "../components/useInventory.tsx";
 
 function ShopItems(): ShopItem[] {
-    return [
+    const { hasSpyglass, setHasSpyglass } = useInventory();
+
+    const items = [
         {
             id: 1,
             name: "Bilge Brew",
@@ -38,6 +41,20 @@ function ShopItems(): ShopItem[] {
             action: () => {}
         }
     ];
+
+    if(!hasSpyglass) {
+        items.push({
+            id: -1,
+            name: "Spyglass o’ Secrets",
+            description: "Reveals the description of all shop items",
+            price: 97,
+            action: () => {
+                setHasSpyglass(true);
+            }
+        });
+    }
+
+    return items;
 }
 
 export default ShopItems;

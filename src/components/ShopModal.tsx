@@ -7,9 +7,11 @@ interface ShopModalProps {
     onClose: () => void;
     ducats: number;
     removeDucats: (amount: number) => void;
+    hasSpyglass: boolean;
+    setHasSpyglass: (value: boolean) => void;
 }
 
-function ShopModal({ ducats, removeDucats }: ShopModalProps) {
+function ShopModal({ ducats, removeDucats, hasSpyglass }: ShopModalProps) {
     const shopItems = ShopItems();
 
     const handlePurchase = (item: ShopItem) => {
@@ -40,6 +42,7 @@ function ShopModal({ ducats, removeDucats }: ShopModalProps) {
                         price={item.price}
                         canAfford={ducats >= item.price}
                         onPurchase={() => handlePurchase(item)}
+                        showDescription={hasSpyglass || item.id === -1}
                     />
                 ))}
             </div>

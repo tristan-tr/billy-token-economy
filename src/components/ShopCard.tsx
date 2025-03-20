@@ -6,14 +6,19 @@ interface ShopCardProps {
     price: number;
     onPurchase: () => void;
     canAfford: boolean;
+    showDescription: boolean;
 }
 
-function ShopCard({ name, description, price, onPurchase, canAfford }: ShopCardProps) {
+function ShopCard({ name, description, price, onPurchase, canAfford, showDescription }: ShopCardProps) {
     return (
         <div className="bg-amber-100 border-2 border-yellow-700 rounded-lg p-3 mb-3">
             <h3 className="text-lg font-bold text-red-800">{name}</h3>
-            <p className="text-sm text-yellow-900 mb-2">{description}</p>
-            <div className="flex justify-between items-center">
+                {showDescription ? (
+                    <p className="text-sm text-yellow-900 mb-2">{description}</p>
+                ) : (
+                    <p className="text-sm text-yellow-900 mb-2 italic">Buy the Spyglass o' Secrets to reveal this description...</p>
+                )}
+                <div className="flex justify-between items-center">
                 <span className="font-bold text-yellow-900">{price} Ducats</span>
                 <motion.button
                     whileHover={{ scale: 1.05, cursor: 'pointer' }}

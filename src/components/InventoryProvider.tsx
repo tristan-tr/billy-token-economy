@@ -4,7 +4,7 @@ import { InventoryContext } from './InventoryContext';
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const [ducats, setDucats] = useLocalStorage<number>('ducats', 0);
-
+    const [hasSpyglass, setHasSpyglass] = useLocalStorage<boolean>('hasSpyglass', false);
 
     const addDucats = (amount: number) => {
         new Audio('/coin-clatter.mp3').play();
@@ -17,7 +17,7 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <InventoryContext.Provider value={{ ducats, addDucats, removeDucats }}>
+        <InventoryContext.Provider value={{ ducats, addDucats, removeDucats, hasSpyglass, setHasSpyglass }}>
             {children}
         </InventoryContext.Provider>
     );
