@@ -8,35 +8,35 @@ function ShopItems(): ShopItem[] {
         {
             id: 1,
             name: "Bilge Brew",
-            description: "Cheap coffee from the grocery store",
+            description: "A rough-and-ready brew, cheap but hearty enough to weather any storm.",
             price: 31,
             action: () => {}
         },
         {
             id: 2,
             name: "Scribe's Favour",
-            description: "I will do one administrative task for you",
+            description: "A scribbler for hire- for when the quartermaster needs a break.",
             price: 41,
             action: () => {}
         },
         {
             id: 3,
             name: "Java Jade",
-            description: "Starbucks Caramel Macchiato Coffee",
+            description: "An exotic caramel-infused nectar to soothe your spirits.",
             price: 59,
             action: () => {}
         },
         {
             id: 4,
             name: "Piratfika",
-            description: "Fika at a place of your choosing",
+            description: "An impromptu rendezvous at a port of your choosing.",
             price: 265,
             action: () => {}
         },
         {
             id: 5,
             name: "Devil’s Bones",
-            description: "Surprise D&D dice set",
+            description: "Cast these infernal bones and let fate decide your fortune on the seven seas.",
             price: 358,
             action: () => {}
         }
@@ -46,7 +46,7 @@ function ShopItems(): ShopItem[] {
         items.push({
             id: -1,
             name: "Spyglass o’ Secrets",
-            description: "Reveals the description of all shop items",
+            description: "A mystical spyglass that unveils the secrets of the Ferase Stras.",
             price: 97,
             action: () => {
                 setHasSpyglass(true);
