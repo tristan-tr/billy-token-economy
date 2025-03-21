@@ -22,8 +22,8 @@ function Tasks(): MapTask[] {
             name: 'Scrying Skill Circuits',
             description: 'Watch one full video from head captain prof. Porter',
             image: spyglassImage,
-            rewardText: '19 Ducats',
-            redeemReward: () => addDucats(19),
+            rewardText: '13 Ducats',
+            redeemReward: () => addDucats(13),
             completed: false,
             parent: parent,
             position: getRandomLocation()
@@ -37,8 +37,8 @@ function Tasks(): MapTask[] {
             name: 'Chemistry Experiment',
             description: 'Complete one exercise from the lab assignment',
             image: penInkImage,
-            rewardText: '23 Ducats',
-            redeemReward: () => addDucats(23),
+            rewardText: '7 Ducats',
+            redeemReward: () => addDucats(7),
             completed: false,
             parent: parent,
             position: getRandomLocation()
@@ -67,8 +67,8 @@ function Tasks(): MapTask[] {
             name: 'Mend the sails',
             description: 'Do one of your weekly tasks',
             image: brokenSailsImage,
-            rewardText: '13 Ducats',
-            redeemReward: () => addDucats(13),
+            rewardText: '19 Ducats',
+            redeemReward: () => addDucats(19),
             completed: false,
             parent: parent,
             position: getRandomLocation()
