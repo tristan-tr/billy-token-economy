@@ -2,7 +2,7 @@ import {TaskDefinition} from "../interfaces/TaskDefinition.tsx";
 
 export const taskDefinitions: TaskDefinition[] = [
     {
-        id: 'video-task',
+        id: 'skill-circuits-video-task',
         name: 'Scrying Skill Circuits',
         description: 'Watch one full video from head captain prof. Porter.',
         rewardAmount: 13,
