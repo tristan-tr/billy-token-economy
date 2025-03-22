@@ -2,12 +2,20 @@ import { useState, ReactNode, useCallback, useEffect } from 'react';
 import useLocalStorage from 'use-local-storage';
 import { MapTask } from "../interfaces/MapTask";
 import { TaskContext, PathAnimation } from './TaskContext';
-import { generateInitialTasks, generateRepeatableTask } from '../services/TaskGenerator';
+import {createTaskInstance, generateInitialTasks, generateRepeatableTask} from '../services/TaskGenerator';
 import { useInventory } from "./useInventory";
 import { taskDefinitions } from '../data/TaskDefinitions';
+import {LocationsMap} from "../data/Locations.tsx";
 
 interface CompletedTaskData {
     [instanceId: string]: boolean;
+}
+
+interface StoredTaskData {
+    instanceId: string;
+    definitionId: string;
+    locationName?: string;
+    parent?: string;
 }
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
@@ -16,10 +24,10 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     // Store task completion state
     const [completedTasks, setCompletedTasks] = useLocalStorage<CompletedTaskData>('completed-tasks', {});
 
-    // Store task instances (both initial and dynamically created)
-    const [taskInstances, setTaskInstances] = useLocalStorage<MapTask[]>('task-instances', []);
+    // Store minimal task data instead of full instances
+    const [storedTasks, setStoredTasks] = useLocalStorage<StoredTaskData[]>('stored-tasks', []);
 
-    // Active tasks - merged with completion state
+    // Active tasks - fully built from stored data
     const [tasks, setTasks] = useState<MapTask[]>([]);
 
     // Path animations
@@ -33,9 +41,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     // Initialize task system
     useEffect(() => {
-        if (taskInstances.length === 0) {
-            // First run - generate initial tasks
+        if (storedTasks.length === 0) {
+            // First run - generate initial tasks and extract minimal data for storage
             const initialTasks = generateInitialTasks();
+
+            const initialStoredData: StoredTaskData[] = initialTasks.map(task => ({
+                instanceId: task.instanceId,
+                definitionId: task.definitionId,
+                locationName: Object.keys(LocationsMap).find(
+                    key => LocationsMap[key].x === task.position.x && LocationsMap[key].y === task.position.y
+                ),
+                parent: task.parent
+            }));
 
             // Make starting tasks visible
             const initialVisibleMarkers: Record<string, boolean> = {};
@@ -43,36 +60,43 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 initialVisibleMarkers[task.instanceId] = true;
             });
 
-            setTaskInstances(initialTasks);
+            setStoredTasks(initialStoredData);
             setVisibleMarkers(initialVisibleMarkers);
         }
 
-        // Apply completion state to task instances
-        const mergedTasks = taskInstances.map(task => ({
-            ...task,
-            completed: completedTasks[task.instanceId] || false,
-            redeemReward: () => {
-                const definition = taskDefinitions.find(def => def.id === task.definitionId);
-                if (definition) addDucats(definition.rewardAmount);
+        // Rebuild full tasks from stored data
+        const builtTasks: MapTask[] = storedTasks.map(storedTask => {
+            const taskDef = taskDefinitions.find(def => def.id === storedTask.definitionId);
+            if (!taskDef) {
+                throw new Error(`Task definition not found for ${storedTask.definitionId}`);
             }
-        }));
 
-        setTasks(mergedTasks);
-    }, [taskInstances, completedTasks, addDucats, setTaskInstances, setVisibleMarkers]);
+            const task = createTaskInstance(
+                taskDef,
+                storedTask.parent,
+                storedTask.locationName
+            );
+
+            // Override instance ID to match stored ID
+            task.instanceId = storedTask.instanceId;
+            task.id = storedTask.instanceId;
+            task.completed = completedTasks[storedTask.instanceId] || false;
+            task.redeemReward = () => {
+                addDucats(taskDef.rewardAmount);
+            };
+
+            return task;
+        });
+
+        setTasks(builtTasks);
+    }, [storedTasks, completedTasks, addDucats, setStoredTasks, setVisibleMarkers]);
 
     const handleTaskComplete = useCallback((instanceId: string) => {
         const completedTask = tasks.find(task => task.instanceId === instanceId);
         if (!completedTask) return;
 
         // Mark task as completed and apply reward
-        const updatedTasks = tasks.map(task => {
-            if (task.instanceId === instanceId) {
-                task.completed = true;
-                task.redeemReward();
-            }
-            return task;
-        });
-        setTasks(updatedTasks);
+        completedTask.redeemReward();
 
         // Update persisted completion state
         setCompletedTasks(prev => ({
@@ -93,8 +117,20 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 );
 
                 if (newTask) {
-                    // Add the new task but don't mark it visible yet
-                    setTaskInstances(prev => [...prev || [], newTask]);
+                    // Store only essential data for the new task
+                    const locationName = Object.keys(LocationsMap).find(
+                        key => LocationsMap[key].x === newTask.position.x && LocationsMap[key].y === newTask.position.y
+                    );
+
+                    const newStoredTask: StoredTaskData = {
+                        instanceId: newTask.instanceId,
+                        definitionId: newTask.definitionId,
+                        locationName,
+                        parent: newTask.parent
+                    };
+
+                    // Add the new minimal task data
+                    setStoredTasks(prev => [...prev || [], newStoredTask]);
 
                     // Add path animation from completed task to new task
                     newPaths.push({
@@ -121,7 +157,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
         // Update path animations state
         setActivePathAnimations(prev => [...prev, ...newPaths]);
-    }, [tasks, setCompletedTasks, setTaskInstances]);
+    }, [tasks, setCompletedTasks, setStoredTasks]);
 
     const handlePathComplete = useCallback((pathId: string, endTaskId: string) => {
         // Remove the completed path animation
