@@ -1,52 +1,72 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useCallback, useEffect } from 'react';
 import useLocalStorage from 'use-local-storage';
-import Tasks from "../data/Tasks.tsx";
-import { MapTask } from "../interfaces/MapTask.tsx";
+import { MapTask } from "../interfaces/MapTask";
 import { TaskContext, PathAnimation } from './TaskContext';
+import { generateInitialTasks, generateRepeatableTask } from '../services/TaskGenerator';
+import { useInventory } from "./useInventory";
+import { taskDefinitions } from '../data/TaskDefinitions';
 
 interface CompletedTaskData {
-    [taskId: number]: boolean;
+    [instanceId: string]: boolean;
 }
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-    // Store just the completion state rather than the full task objects
+    const { addDucats } = useInventory();
+
+    // Store task completion state
     const [completedTasks, setCompletedTasks] = useLocalStorage<CompletedTaskData>('completed-tasks', {});
 
-    // Get base tasks and apply the completion state
-    const baseTasks = Tasks();
-    const mergedTasks = baseTasks.map(task => ({
-        ...task,
-        completed: completedTasks[task.id]
-    }));
+    // Store task instances (both initial and dynamically created)
+    const [taskInstances, setTaskInstances] = useLocalStorage<MapTask[]>('task-instances', []);
 
-    const [tasks, setTasks] = useState<MapTask[]>(mergedTasks);
+    // Active tasks - merged with completion state
+    const [tasks, setTasks] = useState<MapTask[]>([]);
+
+    // Path animations
     const [activePathAnimations, setActivePathAnimations] = useState<PathAnimation[]>([]);
 
-    // Default visible markers are 1 and 2, plus any task whose parent is completed
-    const initialVisibleMarkers = () => {
-        const defaultVisible: Record<number, boolean> = { 1: true, 2: true };
-
-        baseTasks.forEach(task => {
-            if (task.parent && completedTasks[task.parent]) {
-                defaultVisible[task.id] = true;
-            }
-        });
-
-        return defaultVisible;
-    };
-
-    const [visibleMarkers, setVisibleMarkers] = useLocalStorage<Record<number, boolean>>(
+    // Visible markers
+    const [visibleMarkers, setVisibleMarkers] = useLocalStorage<Record<string, boolean>>(
         'visible-markers',
-        initialVisibleMarkers()
+        {}
     );
 
-    const handleTaskComplete = (taskId: number) => {
-        const completedTask = tasks.find(task => task.id === taskId);
+    // Initialize task system
+    useEffect(() => {
+        if (taskInstances.length === 0) {
+            // First run - generate initial tasks
+            const initialTasks = generateInitialTasks();
+
+            // Make starting tasks visible
+            const initialVisibleMarkers: Record<string, boolean> = {};
+            initialTasks.slice(0, 2).forEach(task => {
+                initialVisibleMarkers[task.instanceId] = true;
+            });
+
+            setTaskInstances(initialTasks);
+            setVisibleMarkers(initialVisibleMarkers);
+        }
+
+        // Apply completion state to task instances
+        const mergedTasks = taskInstances.map(task => ({
+            ...task,
+            completed: completedTasks[task.instanceId] || false,
+            redeemReward: () => {
+                const definition = taskDefinitions.find(def => def.id === task.definitionId);
+                if (definition) addDucats(definition.rewardAmount);
+            }
+        }));
+
+        setTasks(mergedTasks);
+    }, [taskInstances, completedTasks, addDucats, setTaskInstances, setVisibleMarkers]);
+
+    const handleTaskComplete = useCallback((instanceId: string) => {
+        const completedTask = tasks.find(task => task.instanceId === instanceId);
         if (!completedTask) return;
 
         // Mark task as completed and apply reward
         const updatedTasks = tasks.map(task => {
-            if (task.id === taskId) {
+            if (task.instanceId === instanceId) {
                 task.completed = true;
                 task.redeemReward();
             }
@@ -55,38 +75,66 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         setTasks(updatedTasks);
 
         // Update persisted completion state
-        setCompletedTasks({
-            ...completedTasks,
-            [taskId]: true
-        });
-
-        // Find child tasks that should now be revealed
-        const childTasks = tasks.filter(task => task.parent === taskId);
-
-        // Create path animations for each newly revealed child task
-        const newPaths: PathAnimation[] = childTasks.map(childTask => ({
-            id: `path-${completedTask.id}-${childTask.id}`,
-            startTaskId: completedTask.id,
-            endTaskId: childTask.id,
+        setCompletedTasks(prev => ({
+            ...prev,
+            [instanceId]: true
         }));
 
-        setActivePathAnimations(prev => [...prev, ...newPaths]);
-    };
+        // Create array to collect all path animations we'll need
+        let newPaths: PathAnimation[] = [];
 
-    const handlePathComplete = (pathId: string, endTaskId: number) => {
+        // Generate new task instances if this was a repeatable task
+        if (completedTask.repeatable) {
+            const definition = taskDefinitions.find(def => def.id === completedTask.definitionId);
+            if (definition && definition.repeatable) {
+                const newTask = generateRepeatableTask(
+                    completedTask.definitionId,
+                    completedTask.instanceId
+                );
+
+                if (newTask) {
+                    // Add the new task but don't mark it visible yet
+                    setTaskInstances(prev => [...prev || [], newTask]);
+
+                    // Add path animation from completed task to new task
+                    newPaths.push({
+                        id: `path-${instanceId}-${newTask.instanceId}`,
+                        startTaskId: instanceId,
+                        endTaskId: newTask.instanceId,
+                    });
+                }
+            }
+        }
+
+        // Find child tasks that should now be revealed
+        const childTasks = tasks.filter(task => task.parent === instanceId);
+
+        // Create path animations for each newly revealed child task
+        const childPaths: PathAnimation[] = childTasks.map(childTask => ({
+            id: `path-${instanceId}-${childTask.instanceId}`,
+            startTaskId: instanceId,
+            endTaskId: childTask.instanceId,
+        }));
+
+        // Combine all path animations
+        newPaths = [...newPaths, ...childPaths];
+
+        // Update path animations state
+        setActivePathAnimations(prev => [...prev, ...newPaths]);
+    }, [tasks, setCompletedTasks, setTaskInstances]);
+
+    const handlePathComplete = useCallback((pathId: string, endTaskId: string) => {
         // Remove the completed path animation
         setActivePathAnimations(prev =>
             prev.filter(path => path.id !== pathId)
         );
 
-        // Make the end task marker visible with animation and persist it
-        const updatedVisibleMarkers = {
-            ...visibleMarkers,
+        // Make the end task marker visible with animation
+        setVisibleMarkers(prev => ({
+            ...prev,
             [endTaskId]: true
-        };
-
-        setVisibleMarkers(updatedVisibleMarkers);
-    };
+        }));
+    }, [setVisibleMarkers]);
 
     return (
         <TaskContext.Provider value={{

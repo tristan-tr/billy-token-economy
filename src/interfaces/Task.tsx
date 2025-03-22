@@ -1,10 +1,9 @@
-export interface Task {
-    id: number;
-    name: string;
-    description: string;
+import {TaskDefinition} from "./TaskDefinition.tsx";
+
+export interface Task extends TaskDefinition {
     image: string;
-    rewardText: string
+    rewardText: string;
     redeemReward: () => void;
     completed: boolean;
-    parent?: number;
+    parent?: string;
 }

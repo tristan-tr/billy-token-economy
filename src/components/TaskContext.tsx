@@ -1,18 +1,18 @@
 import { createContext } from 'react';
-import { MapTask } from "../interfaces/MapTask.tsx";
+import { MapTask } from "../interfaces/MapTask";
 
 export interface PathAnimation {
     id: string;
-    startTaskId: number;
-    endTaskId: number;
+    startTaskId: string;
+    endTaskId: string;
 }
 
 export interface TaskContextType {
     tasks: MapTask[];
-    visibleMarkers: Record<number, boolean>;
+    visibleMarkers: Record<string, boolean>;
     activePathAnimations: PathAnimation[];
-    handleTaskComplete: (taskId: number) => void;
-    handlePathComplete: (pathId: string, endTaskId: number) => void;
+    handleTaskComplete: (taskId: string) => void;
+    handlePathComplete: (pathId: string, endTaskId: string) => void;
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(undefined);
