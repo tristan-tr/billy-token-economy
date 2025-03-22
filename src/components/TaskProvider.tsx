@@ -33,11 +33,26 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     // Path animations
     const [activePathAnimations, setActivePathAnimations] = useState<PathAnimation[]>([]);
 
-    // Visible markers
-    const [visibleMarkers, setVisibleMarkers] = useLocalStorage<Record<string, boolean>>(
-        'visible-markers',
-        {}
-    );
+    const visibleMarkers = tasks.reduce((visible, task) => {
+        // Initial tasks with no parent are visible
+        if (!task.parent) {
+            visible[task.instanceId] = true;
+            return visible;
+        }
+
+        // Tasks whose parents are completed are visible
+        const parentTask = tasks.find(t => t.instanceId === task.parent);
+        if (parentTask && completedTasks[parentTask.instanceId]) {
+            visible[task.instanceId] = true;
+        }
+
+        // Tasks that are destinations of active path animations are invisible
+        if (activePathAnimations.some(path => path.endTaskId === task.instanceId)) {
+            visible[task.instanceId] = false;
+        }
+
+        return visible;
+    }, {} as Record<string, boolean>);
 
     // Initialize task system
     useEffect(() => {
@@ -54,14 +69,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 parent: task.parent
             }));
 
-            // Make starting tasks visible
-            const initialVisibleMarkers: Record<string, boolean> = {};
-            initialTasks.slice(0, 2).forEach(task => {
-                initialVisibleMarkers[task.instanceId] = true;
-            });
-
             setStoredTasks(initialStoredData);
-            setVisibleMarkers(initialVisibleMarkers);
         }
 
         // Rebuild full tasks from stored data
@@ -89,7 +97,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         });
 
         setTasks(builtTasks);
-    }, [storedTasks, completedTasks, addDucats, setStoredTasks, setVisibleMarkers]);
+    }, [storedTasks, completedTasks, addDucats, setStoredTasks]);
 
     const handleTaskComplete = useCallback((instanceId: string) => {
         const completedTask = tasks.find(task => task.instanceId === instanceId);
@@ -159,18 +167,12 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         setActivePathAnimations(prev => [...prev, ...newPaths]);
     }, [tasks, setCompletedTasks, setStoredTasks]);
 
-    const handlePathComplete = useCallback((pathId: string, endTaskId: string) => {
+    const handlePathComplete = (pathId: string) => {
         // Remove the completed path animation
         setActivePathAnimations(prev =>
             prev.filter(path => path.id !== pathId)
         );
-
-        // Make the end task marker visible with animation
-        setVisibleMarkers(prev => ({
-            ...prev,
-            [endTaskId]: true
-        }));
-    }, [setVisibleMarkers]);
+    };
 
     return (
         <TaskContext.Provider value={{
