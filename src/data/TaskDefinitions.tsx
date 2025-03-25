@@ -41,7 +41,8 @@ export const taskDefinitions: TaskDefinition[] = [
         name: 'Washing in the ocean (1x/day)',
         description: 'Take a shower.',
         rewardAmount: 13,
-        repeatable: true
+        repeatable: true,
+        repeatFrequencyDays: 1
     },
     {
         id: 'dishes-task',
@@ -55,14 +56,16 @@ export const taskDefinitions: TaskDefinition[] = [
         name: 'Sweep the deck (1x/day)',
         description: 'Tidy your room.',
         rewardAmount: 7,
-        repeatable: true
+        repeatable: true,
+        repeatFrequencyDays: 1
     },
     {
         id: 'meds-task',
         name: 'Take your meds (1x/day)',
         description: 'Take your meds.',
         rewardAmount: 1,
-        repeatable: true
+        repeatable: true,
+        repeatFrequencyDays: 1
     }
     // {
     //     id: 'budget-task',

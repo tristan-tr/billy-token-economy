@@ -5,4 +5,5 @@ export interface TaskDefinition {
     rewardAmount: number;
     repeatable: boolean;
     initialLocation?: string;
+    repeatFrequencyDays?: number;
 }

@@ -9,6 +9,7 @@ import {LocationsMap} from "../data/Locations.tsx";
 
 interface CompletedTaskData {
     instanceId: string;
+    completedOn: Date;
 }
 
 interface StoredTaskData {
@@ -49,6 +50,30 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         // Tasks that are destinations of active path animations are invisible
         if (activePathAnimations.some(path => path.endTaskId === task.instanceId)) {
             visible[task.instanceId] = false;
+        }
+
+        // Tasks that have a time delay need to be hidden until the delay has passed
+        const taskDef = taskDefinitions.find(def => def.id === task.definitionId);
+        if (task.parent && taskDef?.repeatFrequencyDays) {
+            // Get the completion date of the parent task
+            const parentCompletionData = completedTasks.find(ct => ct.instanceId === task.parent);
+
+            if (parentCompletionData) {
+                const parentCompletionDate = new Date(parentCompletionData.completedOn);
+                parentCompletionDate.setHours(0, 0, 0, 0);
+
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+
+                // Calculate days since completion
+                const millisecondsDiff = currentDate.getTime() - parentCompletionDate.getTime();
+                const daysSinceCompletion = millisecondsDiff / (1000 * 60 * 60 * 24);
+
+                // Hide task if not enough days have passed
+                if (daysSinceCompletion < taskDef.repeatFrequencyDays) {
+                    visible[task.instanceId] = false;
+                }
+            }
         }
 
         return visible;
@@ -107,10 +132,10 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         completedTask.redeemReward();
 
         // Update persisted completion state
-        setCompletedTasks(prev => [...prev, { instanceId }]);
+        setCompletedTasks(prev => [...prev || [], { instanceId, completedOn: new Date() }]);
 
         // Create array to collect all path animations we'll need
-        let newPaths: PathAnimation[] = [];
+        const newPaths: PathAnimation[] = [];
 
         // Generate new task instances if this was a repeatable task
         if (completedTask.repeatable) {
@@ -137,28 +162,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     // Add the new minimal task data
                     setStoredTasks(prev => [...prev || [], newStoredTask]);
 
-                    // Add path animation from completed task to new task
-                    newPaths.push({
-                        id: `path-${instanceId}-${newTask.instanceId}`,
-                        startTaskId: instanceId,
-                        endTaskId: newTask.instanceId,
-                    });
+                    // Add path animation from completed task to new task if it has no time delay
+                    if(!definition.repeatFrequencyDays) {
+                        newPaths.push({
+                            id: `path-${instanceId}-${newTask.instanceId}`,
+                            startTaskId: instanceId,
+                            endTaskId: newTask.instanceId,
+                        });
+                    }
                 }
             }
         }
-
-        // Find child tasks that should now be revealed
-        const childTasks = tasks.filter(task => task.parent === instanceId);
-
-        // Create path animations for each newly revealed child task
-        const childPaths: PathAnimation[] = childTasks.map(childTask => ({
-            id: `path-${instanceId}-${childTask.instanceId}`,
-            startTaskId: instanceId,
-            endTaskId: childTask.instanceId,
-        }));
-
-        // Combine all path animations
-        newPaths = [...newPaths, ...childPaths];
 
         // Update path animations state
         setActivePathAnimations(prev => [...prev, ...newPaths]);
