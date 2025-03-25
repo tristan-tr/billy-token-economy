@@ -2,12 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { MapTask } from "../interfaces/MapTask";
 import { taskDefinitions } from "../data/TaskDefinitions";
 import { LocationsMap } from "../data/Locations";
-import { getLocationImage } from "../data/LocationImages";
+import {getLocationImage, locationImages} from "../data/LocationImages";
 import {TaskDefinition} from "../interfaces/TaskDefinition.tsx";
 
 export const getRandomLocation = (existingTasks: MapTask[] = []) => {
-    const keys = Object.keys(LocationsMap);
-
     // Find locations that are already occupied by tasks
     const occupiedLocations = existingTasks.map(task => {
         return Object.keys(LocationsMap).find(
@@ -15,11 +13,28 @@ export const getRandomLocation = (existingTasks: MapTask[] = []) => {
         );
     }).filter(Boolean) as string[];
 
-    // Filter out occupied locations
-    const availableLocations = keys.filter(key => !occupiedLocations.includes(key));
+    // Get locations with custom images
+    const locationsWithImages = Object.keys(locationImages);
 
-    // Pick a random location from available ones
+    // First try to find available locations with custom images
+    const availableLocationsWithImages = locationsWithImages.filter(
+        key => !occupiedLocations.includes(key) && LocationsMap[key]
+    );
+
+    // If we have available locations with images, use those
+    if (availableLocationsWithImages.length > 0) {
+        const randomLocationName = availableLocationsWithImages[Math.floor(Math.random() * availableLocationsWithImages.length)];
+        return {
+            name: randomLocationName,
+            position: LocationsMap[randomLocationName]
+        };
+    }
+
+    // Otherwise fall back to any available location
+    const allKeys = Object.keys(LocationsMap);
+    const availableLocations = allKeys.filter(key => !occupiedLocations.includes(key));
     const randomLocationName = availableLocations[Math.floor(Math.random() * availableLocations.length)];
+
     return {
         name: randomLocationName,
         position: LocationsMap[randomLocationName]
