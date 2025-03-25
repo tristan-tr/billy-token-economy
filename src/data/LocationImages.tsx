@@ -1,15 +1,26 @@
-// import gadeshireImage from '../images/locations/gadeshire.jpg';
-// import xalosImage from '../images/locations/xalos.jpg';
+import GadeshireImage from '../images/locations/Gadeshire.jpg';
+import XalosImage from '../images/locations/Xalos.jpg';
+import BegreyckImage from '../images/locations/Begreyck.jpg';
+import CaecavelImage from '../images/locations/Caecavel.jpg';
+import DertonaImage from '../images/locations/Dertona.jpg';
+import DilabonImage from '../images/locations/Dilabon.jpg';
+import HillscordImage from '../images/locations/Hillscord.jpg';
+import IrcachiImage from '../images/locations/Ircachi.jpg';
+import KelidelImage from '../images/locations/Kelidel.jpg';
 
 // default fallback image
 import pirateMapImage from '../images/pirate-map.jpg';
 
 export const locationImages: Record<string, string> = {
-    // 'Hasren': hasrenImage,
-    // 'Verringen': verringenImage,
-    // 'Gadeshire': gadeshireImage,
-    // 'Xalos': xalosImage,
-    // Add other locations here
+    'Gadeshire': GadeshireImage,
+    'Xalos': XalosImage,
+    'Begreyck': BegreyckImage,
+    'Caecavel': CaecavelImage,
+    'Dertona': DertonaImage,
+    'Dilabon': DilabonImage,
+    'Hillscord': HillscordImage,
+    'Ircachi': IrcachiImage,
+    'Kelidel': KelidelImage,
 };
 
 export function getLocationImage(locationName: string): string {
