@@ -8,7 +8,7 @@ import { taskDefinitions } from '../data/TaskDefinitions';
 import {LocationsMap} from "../data/Locations.tsx";
 
 interface CompletedTaskData {
-    [instanceId: string]: boolean;
+    instanceId: string;
 }
 
 interface StoredTaskData {
@@ -22,7 +22,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const { addDucats } = useInventory();
 
     // Store task completion state
-    const [completedTasks, setCompletedTasks] = useLocalStorage<CompletedTaskData>('completed-tasks', {});
+    const [completedTasks, setCompletedTasks] = useLocalStorage<CompletedTaskData[]>('completed-tasks', []);
 
     // Store minimal task data instead of full instances
     const [storedTasks, setStoredTasks] = useLocalStorage<StoredTaskData[]>('stored-tasks', []);
@@ -42,7 +42,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
         // Tasks whose parents are completed are visible
         const parentTask = tasks.find(t => t.instanceId === task.parent);
-        if (parentTask && completedTasks[parentTask.instanceId]) {
+        if (parentTask && completedTasks.some(ct => ct.instanceId === parentTask.instanceId)) {
             visible[task.instanceId] = true;
         }
 
@@ -88,7 +88,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             // Override instance ID to match stored ID
             task.instanceId = storedTask.instanceId;
             task.id = storedTask.instanceId;
-            task.completed = completedTasks[storedTask.instanceId] || false;
+            task.completed = completedTasks.some(ct => ct.instanceId === storedTask.instanceId) || false;
             task.redeemReward = () => {
                 addDucats(taskDef.rewardAmount);
             };
@@ -107,10 +107,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         completedTask.redeemReward();
 
         // Update persisted completion state
-        setCompletedTasks(prev => ({
-            ...prev,
-            [instanceId]: true
-        }));
+        setCompletedTasks(prev => [...prev, { instanceId }]);
 
         // Create array to collect all path animations we'll need
         let newPaths: PathAnimation[] = [];
