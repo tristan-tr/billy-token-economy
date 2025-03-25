@@ -143,7 +143,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             if (definition && definition.repeatable) {
                 const newTask = generateRepeatableTask(
                     completedTask.definitionId,
-                    completedTask.instanceId
+                    completedTask.instanceId,
+                    tasks
                 );
 
                 if (newTask) {
