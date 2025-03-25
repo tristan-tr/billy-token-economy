@@ -1,18 +1,18 @@
 import { useState, useEffect, ReactNode } from 'react';
-import useDataMigration from '../services/DataMigrationService';
+import useDataMigration from './useDataMigration.tsx';
 
 interface MigrationProviderProps {
     children: ReactNode;
 }
 
 export default function MigrationProvider({ children }: MigrationProviderProps) {
-    const { completedMigrations } = useDataMigration();
+    const { currentVersion } = useDataMigration();
     const [migrationsComplete, setMigrationsComplete] = useState(false);
 
     useEffect(() => {
         // Set migrations as complete after first run
         setMigrationsComplete(true);
-    }, [completedMigrations]);
+    }, [currentVersion]);
 
     if (!migrationsComplete) {
         return (

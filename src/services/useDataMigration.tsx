@@ -6,7 +6,7 @@ interface MigrationModule {
 }
 
 export default function useDataMigration() {
-    const [completedMigrations, setCompletedMigrations] = useLocalStorage<string[]>('completed-migrations', []);
+    const [currentVersion, setCurrentVersion] = useLocalStorage<number>('data-version', 0);
 
     useEffect(() => {
         const runMigrations = async () => {
@@ -29,10 +29,10 @@ export default function useDataMigration() {
 
                 // Run migrations that haven't been executed yet
                 for (const migration of sortedMigrations) {
-                    if (!completedMigrations.includes(migration.path)) {
-                        console.log(`Running migration: ${migration.path}`);
+                    if (migration.version > currentVersion) {
+                        console.log(`Running migration: ${migration.path} (version ${migration.version})`);
                         await migration.migrate();
-                        setCompletedMigrations(prev => [...prev || [], migration.path]);
+                        setCurrentVersion(migration.version);
                     }
                 }
             } catch (error) {
@@ -41,23 +41,7 @@ export default function useDataMigration() {
         };
 
         runMigrations();
-    }, [completedMigrations, setCompletedMigrations]);
+    }, [currentVersion, setCurrentVersion]);
 
-    // Calculate current version from completed migrations
-    const getCurrentVersion = () => {
-        const versionRegex = /(\d+)_/;
-        return completedMigrations.reduce((maxVersion, path) => {
-            const match = path.match(versionRegex);
-            if (match) {
-                const version = parseInt(match[1], 10);
-                return Math.max(maxVersion, version);
-            }
-            return maxVersion;
-        }, 0);
-    };
-
-    return {
-        currentVersion: getCurrentVersion(),
-        completedMigrations
-    };
+    return { currentVersion };
 }
