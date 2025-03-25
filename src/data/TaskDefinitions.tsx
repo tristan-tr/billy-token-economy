@@ -12,7 +12,7 @@ export const taskDefinitions: TaskDefinition[] = [
         id: 'lab-exercise-task',
         name: 'Chemistry Experiment',
         description: 'Complete one exercise from the lab assignment.',
-        rewardAmount: 7,
+        rewardAmount: 5,
         repeatable: true
     },
     {
@@ -48,7 +48,7 @@ export const taskDefinitions: TaskDefinition[] = [
         id: 'dishes-task',
         name: 'Wash the dishes',
         description: 'Do 5 dishes in the kitchen. Everything but utensils counts.',
-        rewardAmount: 7,
+        rewardAmount: 11,
         repeatable: true
     },
     {
