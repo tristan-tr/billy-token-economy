@@ -56,6 +56,13 @@ export const taskDefinitions: TaskDefinition[] = [
         description: 'Tidy your room.',
         rewardAmount: 7,
         repeatable: true
+    },
+    {
+        id: 'meds-task',
+        name: 'Take your meds (1x/day)',
+        description: 'Take your meds.',
+        rewardAmount: 1,
+        repeatable: true
     }
     // {
     //     id: 'budget-task',
