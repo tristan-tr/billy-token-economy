@@ -4,6 +4,7 @@ import {TaskProvider} from "../components/TaskProvider.tsx";
 import InventoryDisplay from "../components/InventoryDisplay.tsx";
 import MapView from "../components/MapView.tsx";
 import Shop from "../components/Shop.tsx";
+import LogTasksButton from "../components/LogTasksButton.tsx";
 
 function App() {
     return (
@@ -12,6 +13,7 @@ function App() {
                 <MapView />
                 <InventoryDisplay />
                 <Shop />
+                <LogTasksButton />
             </TaskProvider>
         </InventoryProvider>
     )
