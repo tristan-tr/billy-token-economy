@@ -4,19 +4,16 @@ import {TaskProvider} from "../components/TaskProvider.tsx";
 import InventoryDisplay from "../components/InventoryDisplay.tsx";
 import MapView from "../components/MapView.tsx";
 import Shop from "../components/Shop.tsx";
-import MigrationProvider from "../services/MigrationProvider.tsx";
 
 function App() {
     return (
-        <MigrationProvider>
-            <InventoryProvider>
-                <TaskProvider>
-                    <MapView />
-                    <InventoryDisplay />
-                    <Shop />
-                </TaskProvider>
-            </InventoryProvider>
-        </MigrationProvider>
+        <InventoryProvider>
+            <TaskProvider>
+                <MapView />
+                <InventoryDisplay />
+                <Shop />
+            </TaskProvider>
+        </InventoryProvider>
     )
 }
 
