@@ -4,7 +4,7 @@ export const taskDefinitions: TaskDefinition[] = [
     {
         id: 'skill-circuits-video-task',
         name: 'Scrying Skill Circuits',
-        description: 'Watch one full video from head captain prof. Porter.',
+        description: 'Watch one full video from head captain prof. Stefan.',
         rewardAmount: 3,
         repeatable: true
     },
@@ -33,7 +33,7 @@ export const taskDefinitions: TaskDefinition[] = [
         id: 'weekly-task',
         name: 'Mend the sails',
         description: 'Do one of your weekly tasks.',
-        rewardAmount: 19,
+        rewardAmount: 13,
         repeatable: true
     },
     {
