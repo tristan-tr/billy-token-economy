@@ -35,9 +35,16 @@ function ShopItems(): ShopItem[] {
         },
         {
             id: 5,
+            name: "Ochre Pigments",
+            description: "The finest ochre pigments with some varnish to keep your ship in top condition.",
+            price: 358,
+            action: () => {}
+        },
+        {
+            id: 6,
             name: "Devil’s Bones",
             description: "Cast these infernal bones and let fate decide your fortune on the seven seas.",
-            price: 358,
+            price: 979,
             action: () => {}
         }
     ];
