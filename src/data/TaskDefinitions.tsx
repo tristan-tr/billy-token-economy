@@ -66,6 +66,13 @@ export const taskDefinitions: TaskDefinition[] = [
         rewardAmount: 1,
         repeatable: true,
         repeatFrequencyDays: 1
+    },
+    {
+        id: 'dinner-task',
+        name: "Cooking Duty (1x)",
+        description: 'Make dinner for the crew.',
+        rewardAmount: 11,
+        repeatable: false
     }
     // {
     //     id: 'budget-task',
