@@ -7,6 +7,7 @@ import DilabonImage from '../images/locations/Dilabon.jpg';
 import HillscordImage from '../images/locations/Hillscord.jpg';
 import IrcachiImage from '../images/locations/Ircachi.jpg';
 import KelidelImage from '../images/locations/Kelidel.jpg';
+import VerringenImage from '../images/locations/Verringen.jpg';
 
 // default fallback image
 import pirateMapImage from '../images/pirate-map.jpg';
@@ -21,6 +22,7 @@ export const locationImages: Record<string, string> = {
     'Hillscord': HillscordImage,
     'Ircachi': IrcachiImage,
     'Kelidel': KelidelImage,
+    'Verringen': VerringenImage
 };
 
 export function getLocationImage(locationName: string): string {
