@@ -73,6 +73,13 @@ export const taskDefinitions: TaskDefinition[] = [
         description: 'Make dinner for the crew.',
         rewardAmount: 11,
         repeatable: false
+    },
+    {
+        id: 'send-birthday-thanks',
+        name: "Express your thanks (1x)",
+        description: 'Show gratitude to the quartermaster for your latest share of the spoils.',
+        rewardAmount: 7,
+        repeatable: false
     }
     // {
     //     id: 'budget-task',
