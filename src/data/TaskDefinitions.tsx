@@ -68,19 +68,19 @@ export const taskDefinitions: TaskDefinition[] = [
         repeatFrequencyDays: 1
     },
     {
-        id: 'dinner-task',
-        name: "Cooking Duty (1x)",
-        description: 'Make dinner for the crew.',
-        rewardAmount: 11,
-        repeatable: false
-    },
-    {
         id: 'send-birthday-thanks',
         name: "Express your thanks (1x)",
         description: 'Show gratitude to the quartermaster for your latest share of the spoils.',
         rewardAmount: 7,
         repeatable: false
     }
+    // {
+    //     id: 'dinner-task',
+    //     name: "Cooking Duty (1x)",
+    //     description: 'Make dinner for the crew.',
+    //     rewardAmount: 11,
+    //     repeatable: false
+    // },
     // {
     //     id: 'budget-task',
     //     name: "Quartermaster's Financial Duties (1x/day)",
