@@ -27,7 +27,7 @@ function ShopModal({ ducats, removeDucats, hasSpyglass }: ShopModalProps) {
                 },
                 body: JSON.stringify({
                     subject: `Purchased ${item.name}`,
-                    text: `Billy purchased ${item.name}: "${item.description}" for ${item.price} Ducats. Current ducats: ${ducats}.`,
+                    text: `Billy purchased ${item.name}: "${item.description}" for ${item.price} Ducats. Previous ducats: ${ducats}, now: ${ducats-item.price}.`,
                 }),
             }).then((response) => response.json())
                 .then((data) => {
