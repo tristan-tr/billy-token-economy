@@ -186,7 +186,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             },
             body: JSON.stringify({
                 subject: 'Task Completed',
-                text: `Task ${completedTask.name} completed!`,
+                text: `Task ${completedTask.name} completed for ${completedTask.rewardAmount} ducats. Description: ${completedTask.description}`,
             }),
         }).then((response) => response.json())
         .then((data) => {

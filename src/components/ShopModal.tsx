@@ -18,6 +18,24 @@ function ShopModal({ ducats, removeDucats, hasSpyglass }: ShopModalProps) {
         if (ducats >= item.price) {
             removeDucats(item.price);
             item.action();
+
+            // Send email notification
+            fetch("https://api.example.com/send-email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    subject: `Purchased ${item.name}`,
+                    message: `Billy purchased ${item.name}: "${item.description}" for ${item.price} Ducats.`,
+                }),
+            }).then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
         }
     };
 
