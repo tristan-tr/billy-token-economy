@@ -20,7 +20,7 @@ interface StoredTaskData {
 }
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-    const { addDucats } = useInventory();
+    const { addDucats, ducats } = useInventory();
 
     // Store task completion state
     const [completedTasks, setCompletedTasks] = useLocalStorage<CompletedTaskData[]>('completed-tasks', []);
@@ -186,7 +186,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             },
             body: JSON.stringify({
                 subject: 'Task Completed',
-                text: `Task ${completedTask.name} completed for ${completedTask.rewardAmount} ducats. Description: ${completedTask.description}`,
+                text: `Task ${completedTask.name} completed for ${completedTask.rewardAmount} ducats. Description: ${completedTask.description}. Current ducats: ${ducats}`,
             }),
         }).then((response) => response.json())
         .then((data) => {
@@ -196,7 +196,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             console.error('Error:', error);
         });
 
-    }, [tasks, setCompletedTasks, setStoredTasks]);
+    }, [tasks, ducats, setCompletedTasks, setStoredTasks]);
 
     const handlePathComplete = (pathId: string) => {
         // Remove the completed path animation
