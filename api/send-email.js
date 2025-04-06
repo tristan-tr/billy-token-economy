@@ -1,17 +1,15 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import * as nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        res.status(405).json({ message: 'Only POST requests allowed' });
-        return;
+        return res.status(405).json({ message: 'Only POST requests allowed' });
     }
 
-    const { subject, text } = req.body as { subject?: string; text?: string };
+    const { subject, text } = req.body;
 
     const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : 465,
+        port: process.env.EMAIL_PORT,
         secure: process.env.EMAIL_SECURE === 'true',
         auth: {
             user: process.env.EMAIL_USER,
