@@ -177,6 +177,25 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
         // Update path animations state
         setActivePathAnimations(prev => [...prev, ...newPaths]);
+
+        // Send email notification
+        fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                subject: 'Task Completed',
+                text: `Task ${completedTask.name} completed!`,
+            }),
+        }).then((response) => response.json())
+        .then((data) => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
     }, [tasks, setCompletedTasks, setStoredTasks]);
 
     const handlePathComplete = (pathId: string) => {
