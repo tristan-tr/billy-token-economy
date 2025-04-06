@@ -20,7 +20,7 @@ function ShopModal({ ducats, removeDucats, hasSpyglass }: ShopModalProps) {
             item.action();
 
             // Send email notification
-            fetch("https://api.example.com/send-email", {
+            fetch("/api/send-email", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
