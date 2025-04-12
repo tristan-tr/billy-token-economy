@@ -66,13 +66,6 @@ export const taskDefinitions: TaskDefinition[] = [
         rewardAmount: 1,
         repeatable: true,
         repeatFrequencyDays: 1
-    },
-    {
-        id: 'send-birthday-thanks',
-        name: "Express your thanks (1x)",
-        description: 'Show gratitude to the quartermaster for your latest share of the spoils.',
-        rewardAmount: 7,
-        repeatable: false
     }
     // {
     //     id: 'dinner-task',
