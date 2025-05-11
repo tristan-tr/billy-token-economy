@@ -2,27 +2,6 @@ import {TaskDefinition} from "../interfaces/TaskDefinition.tsx";
 
 export const taskDefinitions: TaskDefinition[] = [
     {
-        id: 'skill-circuits-video-task',
-        name: 'Scrying Skill Circuits',
-        description: 'Watch one full video from head captain prof. Stefan.',
-        rewardAmount: 3,
-        repeatable: true
-    },
-    {
-        id: 'lab-exercise-task',
-        name: 'Chemistry Experiment',
-        description: 'Complete one exercise from the lab assignment.',
-        rewardAmount: 5,
-        repeatable: true
-    },
-    {
-        id: 'lecture-task',
-        name: 'Attend a demonstration from the captain',
-        description: 'Watch one multimedia lecture.',
-        rewardAmount: 29,
-        repeatable: true
-    },
-    {
         id: 'admin-task',
         name: "Quartermaster's Paperwork",
         description: 'Complete one administrative task.',
