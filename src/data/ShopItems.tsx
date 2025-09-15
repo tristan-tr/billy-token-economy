@@ -5,13 +5,13 @@ function ShopItems(): ShopItem[] {
     const { hasSpyglass, setHasSpyglass } = useInventory();
 
     const items = [
-        {
-            id: 1,
-            name: "Bilge Brew",
-            description: "A rough-and-ready brew, cheap but hearty enough to weather any storm.",
-            price: 31,
-            action: () => {}
-        },
+        // {
+        //     id: 1,
+        //     name: "Bilge Brew",
+        //     description: "A rough-and-ready brew, cheap but hearty enough to weather any storm.",
+        //     price: 31,
+        //     action: () => {}
+        // },
         {
             id: 2,
             name: "Scribe's Favour",
@@ -19,11 +19,18 @@ function ShopItems(): ShopItem[] {
             price: 41,
             action: () => {}
         },
+        // {
+        //     id: 3,
+        //     name: "Java Jade",
+        //     description: "An exotic caramel-infused nectar to soothe your spirits.",
+        //     price: 59,
+        //     action: () => {}
+        // },
         {
-            id: 3,
-            name: "Java Jade",
-            description: "An exotic caramel-infused nectar to soothe your spirits.",
-            price: 59,
+            id: 7,
+            name: "Bottle o' air",
+            description: "A bottle of the freshest air from the Ferase Stras, to remind you of home.",
+            price: 233,
             action: () => {}
         },
         {
@@ -44,9 +51,9 @@ function ShopItems(): ShopItem[] {
             id: 6,
             name: "Devil’s Bones",
             description: "Cast these infernal bones and let fate decide your fortune on the seven seas.",
-            price: 979,
+            price: 701,
             action: () => {}
-        }
+        },
     ];
 
     if(!hasSpyglass) {

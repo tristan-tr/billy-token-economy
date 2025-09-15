@@ -45,6 +45,22 @@ export const taskDefinitions: TaskDefinition[] = [
         rewardAmount: 1,
         repeatable: true,
         repeatFrequencyDays: 1
+    },
+    {
+        id: 'exercise-task',
+        name: 'Exercise (1x/2days)',
+        description: 'Exercise your arms to keep them in shape for hoisting sails. (3 sets of push-ups)',
+        rewardAmount: 11,
+        repeatable: true,
+        repeatFrequencyDays: 2
+    },
+    {
+        id: 'self-reflection-task',
+        name: 'Self Reflection (1x/week)',
+        description: 'Spend some time reflecting on the actions of the captain.',
+        rewardAmount: 17,
+        repeatable: true,
+        repeatFrequencyDays: 7
     }
     // {
     //     id: 'dinner-task',
