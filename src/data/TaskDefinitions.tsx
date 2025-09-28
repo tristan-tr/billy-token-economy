@@ -60,7 +60,7 @@ export const taskDefinitions: TaskDefinition[] = [
         description: 'Spend some time reflecting on the actions of the captain.',
         rewardAmount: 17,
         repeatable: true,
-        repeatFrequencyDays: 7
+        repeatFrequencyDays: 1
     }
     // {
     //     id: 'dinner-task',
