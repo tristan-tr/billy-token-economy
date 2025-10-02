@@ -61,6 +61,13 @@ export const taskDefinitions: TaskDefinition[] = [
         rewardAmount: 17,
         repeatable: true,
         repeatFrequencyDays: 1
+    },
+    {
+        id: 'school-work',
+        name: 'Train ya brain',
+        description: 'Even a scallywag needs to study at some point',
+        rewardAmount: 13,
+        repeatable: true
     }
     // {
     //     id: 'dinner-task',
