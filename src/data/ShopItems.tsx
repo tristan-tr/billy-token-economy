@@ -27,13 +27,6 @@ function ShopItems(): ShopItem[] {
         //     action: () => {}
         // },
         {
-            id: 7,
-            name: "Bottle o' air",
-            description: "A bottle of the freshest air from the Ferase Stras, to remind you of home.",
-            price: 233,
-            action: () => {}
-        },
-        {
             id: 4,
             name: "Piratfika",
             description: "An impromptu rendezvous at a port of your choosing.",
